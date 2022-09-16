@@ -9,13 +9,14 @@
 #
 # Author names and student IDs:
 # Endi Isuf (1542591) 
-# Dea Llazo (author_student_ID_2)
-# Ilesh Yadav (author_student_ID_3)
+# Dea Llazo (1589857)
+# Ilesh Yadav (1540025)
 # Luca (author_student_ID_4)
 ##
 
 # Import built-in json library for handling input/output 
 import json
+import string
 
 
 
@@ -80,3 +81,36 @@ def solve_exercise(exercise_location : str, answer_location : str):
         # Serialize Python answer data (stored in answer) to JSON answer data and write it to answer_file
         json.dump(answer, answer_file, indent=4)
     
+
+def convert(x: string):
+    pass
+
+def integer_addition(x: string, y: string):
+    pass
+
+def integer_subtraction(x: string, y: string):
+    pass
+
+def integer_primary_multiplication(x: string, y: string):
+    pass
+
+def integer_karatsuba(x: string, y: string):
+    pass
+
+def integer_euclidian(x: string, y: string):
+    pass
+
+def modular_reduction(x: string):
+    pass
+
+def modular_addition(x: string, y: string):
+    pass
+
+def modular_subtraction(x: string, y: string):
+    pass
+
+def modular_multiplication(x: string, y: string):
+    pass
+
+def modular_inversion(x: string):
+    pass
