@@ -120,4 +120,8 @@ def modular_multiplication(x: string, y: string, mod: string, radix: int):
     return result
 
 def modular_inversion(x: string, mod: string, radix: int):
-    pass
+    b = integer_subtraction(mod, "1", radix)
+    while b != "-1":
+        mult_mod = modular_multiplication(x, b, mod, radix)
+        if mult_mod == "1":
+            return b
