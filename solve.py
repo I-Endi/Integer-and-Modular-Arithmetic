@@ -85,32 +85,39 @@ def solve_exercise(exercise_location : str, answer_location : str):
 def convert(x: string):
     pass
 
-def integer_addition(x: string, y: string):
+def integer_addition(x: string, y: string, radix: int):
     pass
 
-def integer_subtraction(x: string, y: string):
+def integer_subtraction(x: string, y: string, radix: int):
     pass
 
-def integer_primary_multiplication(x: string, y: string):
+def integer_primary_multiplication(x: string, y: string ,radix: int):
     pass
 
-def integer_karatsuba(x: string, y: string):
+def integer_karatsuba(x: string, y: string, radix: int):
     pass
 
-def integer_euclidian(x: string, y: string):
+def integer_euclidian(x: string, y: string, radix: int):
     pass
 
-def modular_reduction(x: string):
+def modular_reduction(x: string, mod: string, radix: int):
     pass
 
-def modular_addition(x: string, y: string):
-    pass
+def modular_addition(x: string, y: string, mod: string, radix: int):
+    sum = integer_addition(x,y,radix)
+    result = modular_reduction(sum, mod, radix)
+    return result
+    
 
-def modular_subtraction(x: string, y: string):
-    pass
+def modular_subtraction(x: string, y: string, mod: string, radix: int):
+    diff = integer_subtraction(x,y, radix)
+    result = modular_reduction(diff, mod, radix)
+    return result
+    
+def modular_multiplication(x: string, y: string, mod: string, radix: int):
+    mult = integer_karatsuba(x, y, radix)
+    result = modular_reduction(mult, mod, radix)
+    return result
 
-def modular_multiplication(x: string, y: string):
-    pass
-
-def modular_inversion(x: string):
+def modular_inversion(x: string, mod: string, radix: int):
     pass
