@@ -4,18 +4,19 @@
 # solve.py
 #
 #
-# Group number:
+# Group number: 34
 # group_number 
 #
 # Author names and student IDs:
 # Endi Isuf (1542591) 
 # Dea Llazo (1589857)
 # Ilesh Yadav (1540025)
-# Luca (author_student_ID_4)
+# Luca Pistone (1263765)
 ##
 
 # Import built-in json library for handling input/output 
 import json
+from re import M, X
 import string
 
 
@@ -85,7 +86,9 @@ def solve_exercise(exercise_location : str, answer_location : str):
 def convert(x: string):
     pass
 
-def integer_addition(x: string, y: string, radix: int):
+### Integer Arithmetic ###
+
+def integer_addition(x: string, y: string):
     pass
 
 def integer_subtraction(x: string, y: string, radix: int):
@@ -100,21 +103,40 @@ def integer_karatsuba(x: string, y: string, radix: int):
 def integer_euclidian(x: string, y: string, radix: int):
     pass
 
-def modular_reduction(x: string, mod: string, radix: int):
-    pass
+### Modular Arithmetic ###
 
+def modular_reduction(x: string, mod: string, radix: int):
+    
+    if x[0] == "-":
+        negativeX = True
+        x = x[1:]
+
+    while geq(x, mod):
+        x = integer_subtraction(absolute(x), mod + "0"*(x.length - mod.length))    
+        x = absolute(x)    
+
+    if negativeX:
+        x =  integer_subtraction(mod, x)
+    
+    return x
+
+
+    
 def modular_addition(x: string, y: string, mod: string, radix: int):
+
     sum = integer_addition(x,y,radix)
     result = modular_reduction(sum, mod, radix)
     return result
     
 
 def modular_subtraction(x: string, y: string, mod: string, radix: int):
+
     diff = integer_subtraction(x,y, radix)
     result = modular_reduction(diff, mod, radix)
     return result
     
 def modular_multiplication(x: string, y: string, mod: string, radix: int):
+
     mult = integer_karatsuba(x, y, radix)
     result = modular_reduction(mult, mod, radix)
     return result
@@ -125,3 +147,47 @@ def modular_inversion(x: string, mod: string, radix: int):
         mult_mod = modular_multiplication(x, b, mod, radix)
         if mult_mod == "1":
             return b
+
+
+### Helping Functions ###
+
+def absolute(x: string):
+    
+    if x[0] == "-":
+        return x[1:]
+    return x
+
+def geq(x: string, y: string):
+    
+    if x[0] == "-":
+        if y[0] == "-":
+            return geq_absolute(y, x)
+
+        else:
+            return False
+
+    else:
+        if y[0] == "-":
+            return True   
+            
+        else:
+            return geq_absolute(x, y)
+
+def geq_absolute(x: string, y: string):
+
+    x = absolute(x)
+    y = absolute(y)
+
+    if x.length > y.length:
+        return True
+
+    elif y.length > x.length:
+        return False
+
+    else:
+        for i in x:
+            if int(x.i) < int(y.i):
+                return False
+        return True
+
+    
