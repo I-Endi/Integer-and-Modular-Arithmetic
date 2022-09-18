@@ -91,16 +91,16 @@ def convert(x: string):
 def integer_addition(x: string, y: string):
     pass
 
-def integer_subtraction(x: string, y: string):
+def integer_subtraction(x: string, y: string, radix: int):
     pass
 
-def integer_primary_multiplication(x: string, y: string):
+def integer_primary_multiplication(x: string, y: string ,radix: int):
     pass
 
-def integer_karatsuba(x: string, y: string):
+def integer_karatsuba(x: string, y: string, radix: int):
     pass
 
-def integer_euclidian(x: string, y: string):
+def integer_euclidian(x: string, y: string, radix: int):
     pass
 
 ### Modular Arithmetic ###
@@ -122,16 +122,26 @@ def modular_reduction(x: string, mod: string, radix: int):
 
 
     
-def modular_addition(x: string, y: string):
-    pass
+def modular_addition(x: string, y: string, mod: string, radix: int):
 
-def modular_subtraction(x: string, y: string):
-    pass
+    sum = integer_addition(x,y,radix)
+    result = modular_reduction(sum, mod, radix)
+    return result
+    
 
-def modular_multiplication(x: string, y: string):
-    pass
+def modular_subtraction(x: string, y: string, mod: string, radix: int):
 
-def modular_inversion(x: string):
+    diff = integer_subtraction(x,y, radix)
+    result = modular_reduction(diff, mod, radix)
+    return result
+    
+def modular_multiplication(x: string, y: string, mod: string, radix: int):
+
+    mult = integer_karatsuba(x, y, radix)
+    result = modular_reduction(mult, mod, radix)
+    return result
+
+def modular_inversion(x: string, mod: string, radix: int):
     pass
 
 
@@ -148,11 +158,14 @@ def geq(x: string, y: string):
     if x[0] == "-":
         if y[0] == "-":
             return geq_absolute(y, x)
+
         else:
             return False
+
     else:
         if y[0] == "-":
             return True   
+            
         else:
             return geq_absolute(x, y)
 
@@ -163,8 +176,10 @@ def geq_absolute(x: string, y: string):
 
     if x.length > y.length:
         return True
+
     elif y.length > x.length:
         return False
+
     else:
         for i in x:
             if int(x.i) < int(y.i):
