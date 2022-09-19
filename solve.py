@@ -112,7 +112,7 @@ def modular_reduction(x: string, mod: string, radix: int):
         x = x[1:]
 
     while geq(x, mod):
-        x = integer_subtraction(absolute(x), mod + "0"*(x.length - mod.length))    
+        x = integer_subtraction(absolute(x), mod + "0"*(x.length - mod.length), radix)    
         x = absolute(x)    
 
     if negativeX:
@@ -165,7 +165,7 @@ def geq(x: string, y: string):
     else:
         if y[0] == "-":
             return True   
-            
+
         else:
             return geq_absolute(x, y)
 
