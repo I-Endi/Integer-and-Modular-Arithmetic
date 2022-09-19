@@ -20,7 +20,6 @@ from re import M, X
 import string
 
 
-
 def solve_exercise(exercise_location : str, answer_location : str):
     """
     solves an exercise specified in the file located at exercise_location and
@@ -74,7 +73,7 @@ def solve_exercise(exercise_location : str, answer_location : str):
         
 
 
-
+    answer = 1
 
     # Open file at answer_location for writing, creating the file if it does not exist yet
     # (and overwriting it if it does already exist).
@@ -88,8 +87,34 @@ def convert(x: string):
 
 ### Integer Arithmetic ###
 
-def integer_addition(x: string, y: string):
-    pass
+def integer_addition(x: string, y: string, radix: int):
+
+    sign = ""
+    x, y, negativeX, negativeY = signCheck(x, y)
+    
+    if negativeX and negativeY:
+        sign = "-"
+    elif negativeX:
+        return integer_subtraction(y, x, radix)
+    elif negativeY:
+        return integer_subtraction(x, y, radix)
+
+    x, y = addZero(x, y)
+
+    carry = False
+    digit = 0
+    result = ""
+    for i in reversed(range(len(x))):
+        digit = int(x[i]) + int(y[i]) + carry
+        if digit >= radix:
+            carry = True
+        else:
+            carry = False
+        digit = digit % radix
+        result = str(digit) + result
+
+    result = sign + removeZero(str(int(carry)) + result)
+    return result
 
 def integer_subtraction(x: string, y: string, radix: int):
     pass
@@ -112,7 +137,7 @@ def modular_reduction(x: string, mod: string, radix: int):
         x = x[1:]
 
     while geq(x, mod):
-        x = integer_subtraction(absolute(x), mod + "0"*(x.length - mod.length), radix)    
+        x = integer_subtraction(absolute(x), mod + "0"*(len(x) - len(mod)), radix)    
         x = absolute(x)    
 
     if negativeX:
@@ -124,14 +149,14 @@ def modular_reduction(x: string, mod: string, radix: int):
     
 def modular_addition(x: string, y: string, mod: string, radix: int):
 
-    sum = integer_addition(x,y,radix)
+    sum = integer_addition(x, y, radix)
     result = modular_reduction(sum, mod, radix)
     return result
     
 
 def modular_subtraction(x: string, y: string, mod: string, radix: int):
 
-    diff = integer_subtraction(x,y, radix)
+    diff = integer_subtraction(x, y, radix)
     result = modular_reduction(diff, mod, radix)
     return result
     
@@ -178,16 +203,41 @@ def geq_absolute(x: string, y: string):
     x = absolute(x)
     y = absolute(y)
 
-    if x.length > y.length:
+    if len(x) > len(y):
         return True
 
-    elif y.length > x.length:
+    elif len(y) > len(x):
         return False
 
     else:
-        for i in x:
-            if int(x.i) < int(y.i):
+        for i in range(len(x)):
+            if int(x[i]) < int(y[i]):
                 return False
         return True
 
+def signCheck(x: string, y: string):
     
+    negativeX = False
+    negativeY = False
+    if x[0] == "-":
+        negativeX = True
+        x = x[1:]
+    if y[0] == "-":
+        negativeY = True
+        y = y[1:]
+    return x, y, negativeX, negativeY
+
+def addZero(x: string, y: string):
+    
+    length_diff = len(x) - len(y)
+    if length_diff > 0:
+        y = ( "0" * length_diff ) + y
+    elif length_diff < 0:
+        x = ( "0" * abs(length_diff) ) + x
+    return x, y
+
+def removeZero(x: string):
+    
+    while x[0] == "0":
+        x = x[1:]
+    return x
