@@ -87,10 +87,6 @@ def solve_exercise(exercise_location : str, answer_location : str):
         # Serialize Python answer data (stored in answer) to JSON answer data and write it to answer_file
         json.dump(answer, answer_file, indent=4)
     
-
-def convert(x: string):
-    pass
-
 ### Integer Arithmetic ###
 
 def integer_addition(x: string, y: string, radix: int):
@@ -141,13 +137,14 @@ def integer_subtraction(x: string, y: string, radix: int):
     carry = False
     digit = 0
     result = ""
-    for i in reversed(range(len(x))):
-        digit = int(x[i]) - int(y[i]) - carry
+    for i in range(len(x)):
+        digit = int(x[len(x) - i - 1]) - int(y[len(x) - i - 1]) - carry
         if digit < 0:
             carry = True
             digit = digit + radix
         else:
             carry = False
+        print(digit, result)
         result = str(digit) + result
 
     result = removeZero(result)
@@ -165,15 +162,17 @@ def integer_euclidian(x: string, y: string, radix: int):
 ### Modular Arithmetic ###
 
 def modular_reduction(x: string, mod: string, radix: int):
+
+    if geq("0", mod):
+        return "undefined"
     
     x, negativeX = singleSignCheck(x)
 
     while geq(x, mod):
-        x = integer_subtraction(absolute(x), mod + "0"*(len(x) - len(mod)), radix)    
-        x = absolute(x)    
+        x = integer_subtraction(x, mod + "0"*(len(x) - len(mod) - 1), radix)    
 
     if negativeX:
-        x =  integer_subtraction(mod, x)
+        x =  integer_subtraction(mod, x, radix)
     
     return x
 
