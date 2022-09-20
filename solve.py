@@ -15,6 +15,7 @@
 ##
 
 # Import built-in json library for handling input/output 
+from asyncio.windows_events import NULL
 import json
 from re import M, X
 import string
@@ -171,7 +172,32 @@ def integer_karatsuba(x: string, y: string, radix: int):
     return result1+result2+result3
 
 def integer_euclidian(x: string, y: string, radix: int):
-    pass
+    switch = False
+
+    if geq(x, y):
+        a, b = x, y
+    else:
+        a, b = y, x
+        switch = True
+
+    s_old = "1"
+    s_new = "0"
+    t_old = "0"
+    t_new = "1" 
+    #r = 1 #doesn't really matter as long as it is not 0
+    while b != 0:
+        q, r = division(a, b, radix)
+        s_new, s_old = integer_subtraction(s_old,integer_karatsuba(q,s_new,radix),radix), s_new
+        t_new, t_old = integer_subtraction(t_old,integer_karatsuba(q,t_new,radix),radix), t_new
+        a = b
+        b = r 
+
+    if switch:
+        return t_old, s_old, a
+    else:
+        return s_old, t_old, a
+
+    
 
 ### Modular Arithmetic ###
 
@@ -180,7 +206,7 @@ def modular_reduction(x: string, mod: string, radix: int):
     x, negativeX = singleSignCheck(x)
 
     while geq(x, mod):
-        x = integer_subtraction(absolute(x), mod + "0"*(len(x) - len(mod)), radix)    
+        x = integer_subtraction(absolute(x), mod + "0"*(len(x) - len(mod) - 1), radix)    
         x = absolute(x)    
 
     if negativeX:
@@ -300,6 +326,25 @@ def split_string(x: string):
     string1 = slice(0, n//2)
     string2 = slice (n//2 +1,n)
     return x[string1], x[string2] 
-    
+
+def division(x: string, y: string, radix: int):
+
+    x, y, negativeX, negativeY = signCheck(x,y)
+    q = "0"
+
+    if geq(y,x):
+        return
+
+    while geq(x, y):
+        x = integer_subtraction(x, y + "0"*(len(x) - len(y) - 1), radix)  
+        q = integer_addition(q, "1"+"0"*(len(x) - len(y) - 1), radix)    
+
+    if negativeX ^ negativeY: #xor function
+        q = "-" + q
+        if negativeX:
+            x = "-" + x
+        
+    return q, x
+ 
 for i in range(8,14):
     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
