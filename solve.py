@@ -189,5 +189,9 @@ def geq_absolute(x: string, y: string):
             if int(x.i) < int(y.i):
                 return False
         return True
-
-    
+        
+def split_string(x: string):
+    n = len(x)
+    string1 = slice(0, n//2)
+    string2 = slice (n//2 +1,n)
+    return x[string1], x[string2]    
