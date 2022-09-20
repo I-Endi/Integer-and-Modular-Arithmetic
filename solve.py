@@ -154,7 +154,18 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
     pass
 
 def integer_karatsuba(x: string, y: string, radix: int):
-    pass
+    if len(x) != len(y):
+        addZero(x, y)
+    x1, x2 = split_string(x)
+    y1, y2 = split_string(y)
+    result1 = integer_primary_multiplication(x1,y1,radix)
+    result3 = integer_primary_multiplication(x2,x2,radix)
+    sumx = integer_addition(x1,x2,radix)
+    sumy = integer_addition(y1,y2,radix)
+    multsum = integer_primary_multiplication(sumx,sumy,radix)
+    diff1 = integer_subtraction(multsum,result1,radix)
+    result2 = integer_subtraction(diff1,result3,radix)
+    return result1+result2+result3
 
 def integer_euclidian(x: string, y: string, radix: int):
     pass
@@ -282,6 +293,12 @@ def removeZero(x: string):
     while x[0] == "0" and len(x) > 1:
         x = x[1:]
     return x
+
+def split_string(x: string):
+    n = len(x)
+    string1 = slice(0, n//2)
+    string2 = slice (n//2 +1,n)
+    return x[string1], x[string2] 
     
 for i in range(8,14):
     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
