@@ -91,6 +91,11 @@ def solve_exercise(exercise_location : str, answer_location : str):
 
 def integer_addition(x: string, y: string, radix: int):
 
+    if y == "0":
+        return x
+    elif x == "0":
+        return y
+
     sign = ""
     x, y, negativeX, negativeY = signCheck(x, y)
     
@@ -158,11 +163,14 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
         x, y = y, x
     
     for i in reversed(range(len(y))):
-        temp = "0"
+        temp = ""
+        carry = 0
+        # print(i)
         for j in reversed(range(len(x))):
-            prod = extended_int(y[i]) * extended_int(x[j])
-            prod = convert_to_radix(str(prod), radix) + "0"*(len(x) - i - 1 + len(y) - j - 1)
-            temp = integer_addition(temp, prod, radix)
+            prod = (extended_int(y[i]) * extended_int(x[j])) + carry
+            temp = digit_to_str(prod % radix) + temp 
+            carry = prod // radix
+        temp = digit_to_str(carry) + temp + "0"*(len(y) - i - 1)
         result = integer_addition(result, temp, radix)
     
     result = removeLeadingZero(result)
@@ -398,12 +406,13 @@ def division(x: string, y: string, radix: int):
 
 
 
-# for i in range(5,14):
+# for i in range(10,14):
 #     print(i)
 #     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
-for i in range(1,14):
+for i in range(6,14):
     print(i)
     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
 
-solve_exercise("Test\Integer\Multiplication\Exercise\exercise0.json", "Test\Integer\Multiplication\Calculated\ answer0.json")
+# solve_exercise("Test\Integer\Multiplication\Exercise\exercise0.json", "Test\Integer\Multiplication\Calculated\ answer0.json")
+
