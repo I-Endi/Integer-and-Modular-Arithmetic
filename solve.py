@@ -159,9 +159,9 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
         x, y = y, x
     
     for i in reversed(range(len(y))):
-        temp = 0
+        temp = "0"
         for j in reversed(range(len(x))):
-            temp = integer_addition(temp, convert_to_radix(extended_int(y[i]) * extended_int(x[j]), radix) + "0"*(i + j))
+            temp = integer_addition(temp, convert_to_radix(str(extended_int(y[i]) * extended_int(x[j])), radix) + "0"*(i + j), radix)
         result = integer_addition(result, str(temp), radix)
     
     if negativeX ^ negativeY:
@@ -415,8 +415,10 @@ def division(x: string, y: string, radix: int):
 
 
 
-for i in range(12,14):
+for i in range(6,14):
+    print(i)
     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
 for i in range(0,14):
+    print(i)
     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
