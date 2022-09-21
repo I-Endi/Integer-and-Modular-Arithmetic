@@ -155,6 +155,9 @@ def integer_subtraction(x: string, y: string, radix: int):
     return result
 
 def integer_primary_multiplication(x: string, y: string ,radix: int):
+
+    if y == "0" or x == "0":
+        return "0"
    
     x, y , negativeX, negativeY = signCheck(x, y)
     result = "0"
@@ -181,20 +184,19 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
 def integer_karatsuba(x: string, y: string, radix: int):
     if len(x) <= 2 or len(y) <= 2:
         return integer_primary_multiplication(x, y, radix)
-
     if len(x) != len(y):
         addLeadingZero(x, y)
-    n = len(x)
-    if n % 2 != 0:
-        n = n+1
     x1, x2 = split_string(x)
     y1, y2 = split_string(y)
-    z2 = integer_karatsuba(x1, y1, radix)
-    z0 = integer_karatsuba(x2, y2, radix)
-    sumz = integer_addition(z0,z2,radix)
-    z1 = integer_subtraction(integer_karatsuba(integer_addition(x1,x2,radix), integer_addition(y1,y2,radix),radix),sumz,radix)
-    return z2+z1+z0
-
+    result1 = integer_primary_multiplication(x1,y1,radix)
+    result3 = integer_primary_multiplication(x2,x2,radix)
+    sumx = integer_addition(x1,x2,radix)
+    sumy = integer_addition(y1,y2,radix)
+    multsum = integer_primary_multiplication(sumx,sumy,radix)
+    diff1 = integer_subtraction(multsum,result1,radix)
+    result2 = integer_subtraction(diff1,result3,radix)
+    return result1+result2+result3
+    
 def integer_euclidian(x: string, y: string, radix: int):
     switch = False
     if x =="0":
@@ -269,18 +271,25 @@ def modular_multiplication(x: string, y: string, mod: string, radix: int):
     return modular_reduction(result, mod, radix)
 
 def modular_inversion(x: string, mod: string, radix: int):
-    a, m = x, mod
-    x1, x2 = "1", "0"
+    # a, m = x, mod
+    # x1, x2 = "1", "0"
 
-    while geq(m,"1"):
-        q, r = division(a, m, radix)
-        a, m = m, r
-        x3 = integer_subtraction(x1, integer_karatsuba(q, x2, radix), radix)
-        x1, x2 = x2, x3
-    if a == "1":
-        return x1
-    else:
+    # while geq(m,"1"):
+    #     q, r = division(a, m, radix)
+    #     a, m = m, r
+    #     x3 = integer_subtraction(x1, integer_karatsuba(q, x2, radix), radix)
+    #     x1, x2 = x2, x3
+    # if a == "1":
+    #     return x1
+    # else:
+    #     return
+    x = modular_reduction(x, mod, radix)
+    a, b, g = integer_euclidian(x,mod,radix)
+    if g != "1":
         return
+    else:
+        return modular_reduction(a,mod, radix)
+
 
 ### Helping Functions ###
 
@@ -412,5 +421,5 @@ for i in range(0,14):
     print(i)
     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
 
-# solve_exercise("Test\Integer\Multiplication\Exercise\exercise0.json", "Test\Integer\Multiplication\Calculated\ answer0.json")
+# solve_exercise("Test\Integer\Karatsuba\Exercise\exercise0.json", "Test\Integer\Karatsuba\Calculated\ answer0.json")
 
