@@ -390,9 +390,9 @@ def division(x: string, y: string, radix: int):
 
 
 
-for i in range(0,14):
-    print(i)
-    solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
+for i in range(4,14):
+     print(i)
+     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
 for i in range(0,14):
     print(i)
