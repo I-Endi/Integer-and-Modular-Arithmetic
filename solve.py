@@ -205,7 +205,7 @@ def integer_euclidian(x: string, y: string, radix: int):
     t_old = "0"
     t_new = "1" 
     #r = 1 #doesn't really matter as long as it is not 0
-    while b != 0:
+    while b != "0":
         q, r = division(a, b, radix)
         mult = integer_primary_multiplication(q,s_new,radix)
         s_new, s_old = integer_subtraction(s_old,integer_primary_multiplication(q,s_new,radix),radix), s_new
@@ -390,12 +390,12 @@ def division(x: string, y: string, radix: int):
 
 
 
-# for i in range(6,14):
+# for i in range(0,14):
 #     print(i)
 #     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
-# for i in range(0,14):
-#     print(i)
-#     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
+for i in range(0,14):
+    print(i)
+    solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
 
 solve_exercise("Test\Integer\Multiplication\Exercise\exercise0.json", "Test\Integer\Multiplication\Calculated\ answer0.json")
