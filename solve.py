@@ -187,7 +187,32 @@ def integer_karatsuba(x: string, y: string, radix: int):
     return result1+result2+result3
 
 def integer_euclidian(x: string, y: string, radix: int):
-    pass
+    switch = False
+
+    if geq(x, y):
+        a, b = x, y
+    else:
+        a, b = y, x
+        switch = True
+
+    s_old = "1"
+    s_new = "0"
+    t_old = "0"
+    t_new = "1" 
+    #r = 1 #doesn't really matter as long as it is not 0
+    while b != 0:
+        q, r = division(a, b, radix)
+        s_new, s_old = integer_subtraction(s_old,integer_karatsuba(q,s_new,radix),radix), s_new
+        t_new, t_old = integer_subtraction(t_old,integer_karatsuba(q,t_new,radix),radix), t_new
+        a = b
+        b = r 
+
+    if switch:
+        return t_old, s_old, a
+    else:
+        return s_old, t_old, a
+
+    
 
 ### Modular Arithmetic ###
 
@@ -368,6 +393,25 @@ def convert_to_radix(x: string, radix: int):
         i += 1
         q, r = division(x, str(radix**i), 10)
     return q + convert_to_radix(r, radix)
+
+def division(x: string, y: string, radix: int):
+
+    x, y, negativeX, negativeY = signCheck(x,y)
+    q = "0"
+
+    if geq(y,x):
+        return
+
+    while geq(x, y):
+        x = integer_subtraction(x, y + "0"*(len(x) - len(y) - 1), radix)  
+        q = integer_addition(q, "1"+"0"*(len(x) - len(y) - 1), radix)    
+
+    if negativeX ^ negativeY: #xor function
+        q = "-" + q
+        if negativeX:
+            x = "-" + x
+        
+    return q, x
 
 
 
