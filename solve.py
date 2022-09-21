@@ -188,8 +188,11 @@ def integer_karatsuba(x: string, y: string, radix: int):
 
 def integer_euclidian(x: string, y: string, radix: int):
     switch = False
-
-    if geq(x, y):
+    if x =="0":
+        return x, "1", y
+    elif y == "0":
+        return "1", y, x
+    elif geq(x, y):
         a, b = x, y
     else:
         a, b = y, x
@@ -202,8 +205,9 @@ def integer_euclidian(x: string, y: string, radix: int):
     #r = 1 #doesn't really matter as long as it is not 0
     while b != 0:
         q, r = division(a, b, radix)
-        s_new, s_old = integer_subtraction(s_old,integer_karatsuba(q,s_new,radix),radix), s_new
-        t_new, t_old = integer_subtraction(t_old,integer_karatsuba(q,t_new,radix),radix), t_new
+        mult = integer_primary_multiplication(q,s_new,radix)
+        s_new, s_old = integer_subtraction(s_old,integer_primary_multiplication(q,s_new,radix),radix), s_new
+        t_new, t_old = integer_subtraction(t_old,integer_primary_multiplication(q,t_new,radix),radix), t_new
         a = b
         b = r 
 
@@ -415,7 +419,7 @@ def division(x: string, y: string, radix: int):
 
 
 
-for i in range(6,14):
+for i in range(0,14):
     print(i)
     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
