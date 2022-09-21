@@ -161,7 +161,7 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
         temp = "0"
         for j in reversed(range(len(x))):
             prod = extended_int(y[i]) * extended_int(x[j])
-            prod = convert_to_radix(str(prod), radix) + "0"*(i + j)
+            prod = convert_to_radix(str(prod), radix) + "0"*(len(x) - i - 1 + len(y) - j - 1)
             temp = integer_addition(temp, prod, radix)
         result = integer_addition(result, temp, radix)
     
@@ -390,10 +390,12 @@ def division(x: string, y: string, radix: int):
 
 
 
-for i in range(4,14):
-     print(i)
-     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
+# for i in range(6,14):
+#     print(i)
+#     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
-for i in range(0,14):
-    print(i)
-    solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
+# for i in range(0,14):
+#     print(i)
+#     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
+
+solve_exercise("Test\Integer\Multiplication\Exercise\exercise0.json", "Test\Integer\Multiplication\Calculated\ answer0.json")
