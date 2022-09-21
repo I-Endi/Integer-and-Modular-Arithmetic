@@ -15,6 +15,7 @@
 ##
 
 # Import built-in json library for handling input/output 
+from asyncio.windows_events import NULL
 import json
 from re import M, X
 import string
@@ -80,7 +81,7 @@ def solve_exercise(exercise_location : str, answer_location : str):
             # Solve modular arithmetic inversion exercise
             answer = modular_inversion(exercise["x"], exercise["modulus"], exercise["radix"] )
             answer = {"answer" : answer}
-    print(answer)
+
     # Open file at answer_location for writing, creating the file if it does not exist yet
     # (and overwriting it if it does already exist).
     with open(answer_location, "w") as answer_file:
@@ -107,13 +108,13 @@ def integer_addition(x: string, y: string, radix: int):
     digit = 0
     result = ""
     for i in reversed(range(len(x))):
-        digit = int(x[i]) + int(y[i]) + carry
+        digit = extended_int(x[i]) + extended_int(y[i]) + carry
         if digit >= radix:
             carry = True
         else:
             carry = False
         digit = digit % radix
-        result = str(digit) + result
+        result = digit_to_str(digit) + result
 
     result = sign + removeZero(str(int(carry)) + result)
     return result
@@ -137,23 +138,41 @@ def integer_subtraction(x: string, y: string, radix: int):
     carry = False
     digit = 0
     result = ""
-    for i in range(len(x)):
-        digit = int(x[len(x) - i - 1]) - int(y[len(x) - i - 1]) - carry
+    for i in reversed(range(len(x))):
+        digit = extended_int(x[i]) - extended_int(y[i]) - carry
         if digit < 0:
             carry = True
             digit = digit + radix
         else:
             carry = False
-        print(digit, result)
-        result = str(digit) + result
+        result = digit_to_str(digit) + result
 
     result = removeZero(result)
     return result
 
 def integer_primary_multiplication(x: string, y: string ,radix: int):
-    pass
+    
+    x, y , negativeX, negativeY = signCheck(x, y)
+    result = "0"
+
+    if geq(y, x):
+        x, y = y, x
+    
+    for i in reversed(range(len(y))):
+        temp = 0
+        for j in reversed(range(len(x))):
+            temp = integer_addition(temp, convert_to_radix(extended_int(y[i]) * extended_int(x[j]), radix) + "0"*(i + j))
+        result = integer_addition(result, str(temp), radix)
+    
+    if negativeX ^ negativeY:
+        result = "-" + result
+    return result
+
 
 def integer_karatsuba(x: string, y: string, radix: int):
+    if len(x) <= 2 or len(y) <= 2:
+        return integer_primary_multiplication(x, y, radix)
+
     if len(x) != len(y):
         addZero(x, y)
     x1, x2 = split_string(x)
@@ -214,7 +233,8 @@ def modular_inversion(x: string, mod: string, radix: int):
         mult_mod = modular_multiplication(x, b, mod, radix)
         if mult_mod == "1":
             return b
-
+        b = integer_subtraction(b, "1", radix)
+    return None
 
 ### Helping Functions ###
 
@@ -253,9 +273,9 @@ def geq_absolute(x: string, y: string):
 
     else:
         for i in range(len(x)):
-            if int(x[i]) > int(y[i]):
+            if extended_int(x[i]) > extended_int(y[i]):
                 return True
-            elif int(x[i]) < int(y[i]): 
+            elif extended_int(x[i]) < extended_int(y[i]): 
                 return False
         return True
 
@@ -295,10 +315,64 @@ def removeZero(x: string):
     return x
 
 def split_string(x: string):
-    n = len(x)
-    string1 = slice(0, n//2)
-    string2 = slice (n//2 +1,n)
-    return x[string1], x[string2] 
+    n = len(x)//2
+    return x[:n], x[n:] 
+
+def extended_int(x: string):
     
-for i in range(8,14):
+    if len(x) > 1:
+        return extended_int(x[:len(x)//2]) + extended_int(x[len(x)//2:])
+    else:
+        match x:
+            case "A":
+                return 10
+            case "B":
+                return 11
+            case "C":
+                return 12
+            case "D":
+                return 13
+            case "E":
+                return 14
+            case "F":
+                return 15
+            case _:
+                return int(x)
+
+def digit_to_str(x: int):
+    
+    match x:
+        case 10:
+            return "A"
+        case 11:
+            return "B"
+        case 12:
+            return "C"
+        case 13:
+            return "D"
+        case 14:
+            return "E"
+        case 15:
+            return "F"
+        case _:
+            return str(x)
+    
+def convert_to_radix(x: string, radix: int):
+    
+    if not(geq(x, str(radix))):
+        return x
+
+    i = 1
+    q, r = division(x, str(radix**i), 10)
+    while geq(q, str(radix)):
+        i += 1
+        q, r = division(x, str(radix**i), 10)
+    return q + convert_to_radix(r, radix)
+
+
+
+for i in range(12,14):
     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
+
+for i in range(0,14):
+    solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
