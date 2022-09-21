@@ -15,7 +15,6 @@
 ##
 
 # Import built-in json library for handling input/output 
-from asyncio.windows_events import NULL
 import json
 from re import M, X
 import string
@@ -102,7 +101,7 @@ def integer_addition(x: string, y: string, radix: int):
     elif negativeY:
         return integer_subtraction(x, y, radix)
 
-    x, y = addZero(x, y)
+    x, y = addLeadingZero(x, y)
 
     carry = False
     digit = 0
@@ -116,7 +115,7 @@ def integer_addition(x: string, y: string, radix: int):
         digit = digit % radix
         result = digit_to_str(digit) + result
 
-    result = sign + removeZero(str(int(carry)) + result)
+    result = sign + removeLeadingZero(str(int(carry)) + result)
     return result
 
 def integer_subtraction(x: string, y: string, radix: int):
@@ -130,7 +129,7 @@ def integer_subtraction(x: string, y: string, radix: int):
     elif negativeY:
         return integer_addition(x, y, radix)
 
-    x, y = addZero(x, y)
+    x, y = addLeadingZero(x, y)
 
     if not(geq(x, y)):
         return "-" + integer_subtraction(y, x, radix)
@@ -147,11 +146,11 @@ def integer_subtraction(x: string, y: string, radix: int):
             carry = False
         result = digit_to_str(digit) + result
 
-    result = removeZero(result)
+    result = removeLeadingZero(result)
     return result
 
 def integer_primary_multiplication(x: string, y: string ,radix: int):
-    
+   
     x, y , negativeX, negativeY = signCheck(x, y)
     result = "0"
 
@@ -161,9 +160,12 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
     for i in reversed(range(len(y))):
         temp = "0"
         for j in reversed(range(len(x))):
-            temp = integer_addition(temp, convert_to_radix(str(extended_int(y[i]) * extended_int(x[j])), radix) + "0"*(i + j), radix)
-        result = integer_addition(result, str(temp), radix)
+            prod = extended_int(y[i]) * extended_int(x[j])
+            prod = convert_to_radix(str(prod), radix) + "0"*(i + j)
+            temp = integer_addition(temp, prod, radix)
+        result = integer_addition(result, temp, radix)
     
+    result = removeLeadingZero(result)
     if negativeX ^ negativeY:
         result = "-" + result
     return result
@@ -174,7 +176,7 @@ def integer_karatsuba(x: string, y: string, radix: int):
         return integer_primary_multiplication(x, y, radix)
 
     if len(x) != len(y):
-        addZero(x, y)
+        addLeadingZero(x, y)
     x1, x2 = split_string(x)
     y1, y2 = split_string(y)
     result1 = integer_primary_multiplication(x1,y1,radix)
@@ -219,12 +221,13 @@ def integer_euclidian(x: string, y: string, radix: int):
 def modular_reduction(x: string, mod: string, radix: int):
 
     if geq("0", mod):
-        return "undefined"
+        return 
     
     x, negativeX = singleSignCheck(x)
 
     while geq(x, mod):
-        x = integer_subtraction(x, mod + "0"*(len(x) - len(mod) - 1), radix)    
+        suffix = "0"*(len(x) - len(mod) - 1)
+        x = integer_subtraction(x, mod + suffix, radix)    
 
     if negativeX:
         x =  integer_subtraction(mod, x, radix)
@@ -243,23 +246,22 @@ def modular_addition(x: string, y: string, mod: string, radix: int):
 def modular_subtraction(x: string, y: string, mod: string, radix: int):
 
     diff = integer_subtraction(x, y, radix)
-    result = modular_reduction(diff, mod, radix)
-    return result
-    
+    return modular_reduction(diff, mod, radix)
+     
 def modular_multiplication(x: string, y: string, mod: string, radix: int):
 
     mult = integer_karatsuba(x, y, radix)
-    result = modular_reduction(mult, mod, radix)
-    return result
+    return modular_reduction(mult, mod, radix)
 
 def modular_inversion(x: string, mod: string, radix: int):
+
     b = integer_subtraction(mod, "1", radix)
     while b != "-1":
-        mult_mod = modular_multiplication(x, b, mod, radix)
-        if mult_mod == "1":
+        product = modular_multiplication(x, b, mod, radix)
+        if product == "1":
             return b
         b = integer_subtraction(b, "1", radix)
-    return None
+    return 
 
 ### Helping Functions ###
 
@@ -270,32 +272,24 @@ def absolute(x: string):
     return x
 
 def geq(x: string, y: string):
-    
-    if x[0] == "-":
-        if y[0] == "-":
-            return geq_absolute(y, x)
 
-        else:
-            return False
+    x, y, negativeX, negativeY = signCheck(x, y)
 
+    if negativeX and negativeY:
+        return geq_absolute(y, x)
+    elif negativeX:
+        return False
+    elif negativeY:
+        return True
     else:
-        if y[0] == "-":
-            return True   
-
-        else:
-            return geq_absolute(x, y)
+        return geq_absolute(x, y)
 
 def geq_absolute(x: string, y: string):
 
-    x = absolute(x)
-    y = absolute(y)
-
     if len(x) > len(y):
         return True
-
     elif len(y) > len(x):
         return False
-
     else:
         for i in range(len(x)):
             if extended_int(x[i]) > extended_int(y[i]):
@@ -303,28 +297,21 @@ def geq_absolute(x: string, y: string):
             elif extended_int(x[i]) < extended_int(y[i]): 
                 return False
         return True
-
-def signCheck(x: string, y: string):
-    
-    negativeX = False
-    negativeY = False
-    if x[0] == "-":
-        negativeX = True
-        x = x[1:]
-    if y[0] == "-":
-        negativeY = True
-        y = y[1:]
-    return x, y, negativeX, negativeY
-
 def singleSignCheck(x: string):
     
     negativeX = False
     if x[0] == "-":
         negativeX = True
-        x = x[1:]
+        x = absolute(x)
     return x, negativeX
 
-def addZero(x: string, y: string):
+def signCheck(x: string, y: string):
+    
+    x, negativeX = singleSignCheck(x)
+    y, negativeY = singleSignCheck(y)
+    return x, y, negativeX, negativeY
+
+def addLeadingZero(x: string, y: string):
     
     length_diff = len(x) - len(y)
     if length_diff > 0:
@@ -333,54 +320,36 @@ def addZero(x: string, y: string):
         x = ( "0" * abs(length_diff) ) + x
     return x, y
 
-def removeZero(x: string):
+def removeLeadingZero(x: string):
     
     while x[0] == "0" and len(x) > 1:
         x = x[1:]
     return x
 
 def split_string(x: string):
-    n = len(x)//2
-    return x[:n], x[n:] 
+    return x[:len(x)//2], x[len(x)//2:] 
 
 def extended_int(x: string):
     
     if len(x) > 1:
-        return extended_int(x[:len(x)//2]) + extended_int(x[len(x)//2:])
+        return extended_int(split_string(x)[0]) + extended_int(split_string(x)[1])
     else:
-        match x:
-            case "A":
-                return 10
-            case "B":
-                return 11
-            case "C":
-                return 12
-            case "D":
-                return 13
-            case "E":
-                return 14
-            case "F":
-                return 15
-            case _:
-                return int(x)
+        x = ord(x)
+        if 48 <= x <= 57:
+            return x - 48
+        elif 65 <= x <= 90:
+            return x - 55
+        else:
+            return
 
 def digit_to_str(x: int):
     
-    match x:
-        case 10:
-            return "A"
-        case 11:
-            return "B"
-        case 12:
-            return "C"
-        case 13:
-            return "D"
-        case 14:
-            return "E"
-        case 15:
-            return "F"
-        case _:
-            return str(x)
+    if x < 10:
+        return str(x)
+    elif x < 35: 
+        return chr(x + 55)
+    else:
+        return
     
 def convert_to_radix(x: string, radix: int):
     
@@ -396,20 +365,22 @@ def convert_to_radix(x: string, radix: int):
 
 def division(x: string, y: string, radix: int):
 
+    if y == "0":
+        return 
+
     x, y, negativeX, negativeY = signCheck(x,y)
     q = "0"
 
-    if geq(y,x):
-        return
+    if geq(x, y):    
 
-    while geq(x, y):
-        x = integer_subtraction(x, y + "0"*(len(x) - len(y) - 1), radix)  
-        q = integer_addition(q, "1"+"0"*(len(x) - len(y) - 1), radix)    
+        while geq(x, y):
+            x = integer_subtraction(x, y + "0"*(len(x) - len(y) - 1), radix)  
+            q = integer_addition(q, "1"+"0"*(len(x) - len(y) - 1), radix)    
 
-    if negativeX ^ negativeY: #xor function
-        q = "-" + q
-        if negativeX:
-            x = "-" + x
+        if negativeX ^ negativeY: #xor function
+            q = "-" + q
+    if negativeX:
+        x = "-" + x
         
     return q, x
 
