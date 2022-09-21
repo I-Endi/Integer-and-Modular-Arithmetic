@@ -183,10 +183,7 @@ def integer_karatsuba(x: string, y: string, radix: int):
         return integer_primary_multiplication(x, y, radix)
 
     if len(x) != len(y):
-        addLeadingZero(x, y)
-    n = len(x)
-    if n % 2 != 0:
-        n = n+1
+        x,y = addLeadingZero(x, y)
     x1, x2 = split_string(x)
     y1, y2 = split_string(y)
     z2 = integer_karatsuba(x1, y1, radix)
@@ -404,11 +401,11 @@ def division(x: string, y: string, radix: int):
     return q, x
 
 
-for i in range(0,14):
-    print(i)
-    solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
+# for i in range(0,14):
+#     print(i)
+#     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
-for i in range(0,14):
+for i in range(10,14):
     print(i)
     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
 
