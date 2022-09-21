@@ -226,7 +226,7 @@ def modular_reduction(x: string, mod: string, radix: int):
 
     if geq("0", mod):
         return 
-    
+
     x, negativeX = singleSignCheck(x)
 
     while geq(x, mod):
@@ -241,24 +241,32 @@ def modular_reduction(x: string, mod: string, radix: int):
 
     
 def modular_addition(x: string, y: string, mod: string, radix: int):
-
-    sum = integer_addition(x, y, radix)
-    result = modular_reduction(sum, mod, radix)
-    return result
+    
+    if geq("0", mod):
+        return 
+    x, y = modular_reduction(x, mod, radix), modular_reduction(y, mod, radix)
+    return integer_addition(x, y, radix)
     
 
 def modular_subtraction(x: string, y: string, mod: string, radix: int):
 
-    diff = integer_subtraction(x, y, radix)
-    return modular_reduction(diff, mod, radix)
+    if geq("0", mod):
+        return 
+    x, y = modular_reduction(x, mod, radix), modular_reduction(y, mod, radix)
+    return integer_subtraction(x, y, radix)
      
 def modular_multiplication(x: string, y: string, mod: string, radix: int):
 
-    mult = integer_karatsuba(x, y, radix)
-    return modular_reduction(mult, mod, radix)
+    if geq("0", mod):
+        return 
+    x, y = modular_reduction(x, mod, radix), modular_reduction(y, mod, radix)
+    return integer_karatsuba(x, y, radix)
 
 def modular_inversion(x: string, mod: string, radix: int):
 
+    if geq("0", mod):
+        return 
+    x = modular_reduction(x, mod, radix)
     b = integer_subtraction(mod, "1", radix)
     while b != "-1":
         product = modular_multiplication(x, b, mod, radix)
@@ -390,12 +398,12 @@ def division(x: string, y: string, radix: int):
 
 
 
-# for i in range(6,14):
+# for i in range(5,14):
 #     print(i)
 #     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
-# for i in range(0,14):
-#     print(i)
-#     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
+for i in range(1,14):
+    print(i)
+    solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
 
 solve_exercise("Test\Integer\Multiplication\Exercise\exercise0.json", "Test\Integer\Multiplication\Calculated\ answer0.json")
