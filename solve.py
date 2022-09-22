@@ -182,22 +182,43 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
     return result
 
 def integer_karatsuba(x: string, y: string, radix: int):
-    if len(x) <= 2 or len(y) <= 2:
+
+    x, y, negativeX, negativeY = signCheck(x, y)
+
+    if negativeX and negativeY:
+        # -x * -y = x * y
+        return integer_karatsuba(x,y , radix)
+    elif negativeX:
+        # -x * y = - (x * y) 
+        return '-' + integer_karatsuba(x, y, radix)
+    elif negativeY:
+        # x * -y = - (x * y)
+        return '-' + integer_karatsuba(x, y, radix)
+
+    if len(x) < 2 or len(y) < 2:
         return integer_primary_multiplication(x, y, radix)
-    if len(x) != len(y):
-        x,y = addLeadingZero(x, y)
+    
+    x, y = addLeadingZero(x, y)
+
+    if not (len(x) % 2 == 0):
+        # add 0 to the start of x and y so that they are both of even length
+        x = "0" + x
+        y = "0" + y
+
     x1, x2 = split_string(x)
     y1, y2 = split_string(y)
-    result1 = integer_primary_multiplication(x1,y1,radix)
-    result3 = integer_primary_multiplication(x2,x2,radix)
-    sumx = integer_addition(x1,x2,radix)
-    sumy = integer_addition(y1,y2,radix)
-    multsum = integer_primary_multiplication(sumx,sumy,radix)
-    diff1 = integer_subtraction(multsum,result1,radix)
-    result2 = integer_subtraction(diff1,result3,radix)
-    return result1+result2+result3
+
+    ac = integer_karatsuba(x1, y1, radix)
+    bd = integer_karatsuba(x2, y2, radix)
+    # ad + bc = [(a + b) * (c + d)] - ac - bd
+    ad_Plus_bc = integer_subtraction(integer_subtraction(integer_karatsuba(integer_addition(x1, x2, radix), integer_addition(y1, y2, radix), radix), ac, radix), bd, radix)
+
+    return integer_addition(integer_addition(ac + ("0" * (2 * (len(x)//2))), ad_Plus_bc + ("0" * (len(x)//2)), radix), bd, radix)
+    
     
 def integer_euclidian(x: string, y: string, radix: int):
+
+    x, y, negativeX, negativeY = signCheck(x,y)
     switch = False
     if x =="0":
         return x, "1", y
@@ -213,19 +234,31 @@ def integer_euclidian(x: string, y: string, radix: int):
     s_new = "0"
     t_old = "0"
     t_new = "1" 
+
     #r = 1 #doesn't really matter as long as it is not 0
-    while b != "0":
+    while geq(b, "1"):
         q, r = division(a, b, radix)
-        mult = integer_primary_multiplication(q,s_new,radix)
-        s_new, s_old = integer_subtraction(s_old,integer_primary_multiplication(q,s_new,radix),radix), s_new
-        t_new, t_old = integer_subtraction(t_old,integer_primary_multiplication(q,t_new,radix),radix), t_new
+        s3 = integer_subtraction(s_old,integer_karatsuba(q,s_new,radix),radix)
+        s_old = s_new
+        s_new = s3
+        t3 = integer_subtraction(t_old,integer_karatsuba(q,t_new,radix),radix)
+        t_old = t_new
+        t_new = t3
         a = b
         b = r 
-
+    
     if switch:
-        return t_old, s_old, a
-    else:
-        return s_old, t_old, a
+        s_old, t_old = t_old, s_old
+
+    if negativeX:
+        s_old= s_old[1:]
+
+    # remove '-' sign
+    if negativeY:
+        t_old = t_old[1:]
+    
+    return s_old, t_old, a
+
 
 ### Modular Arithmetic ###
 
@@ -271,18 +304,7 @@ def modular_multiplication(x: string, y: string, mod: string, radix: int):
     return modular_reduction(result, mod, radix)
 
 def modular_inversion(x: string, mod: string, radix: int):
-    # a, m = x, mod
-    # x1, x2 = "1", "0"
 
-    # while geq(m,"1"):
-    #     q, r = division(a, m, radix)
-    #     a, m = m, r
-    #     x3 = integer_subtraction(x1, integer_karatsuba(q, x2, radix), radix)
-    #     x1, x2 = x2, x3
-    # if a == "1":
-    #     return x1
-    # else:
-    #     return
     x = modular_reduction(x, mod, radix)
     a, b, g = integer_euclidian(x,mod,radix)
     if g != "1":
@@ -402,8 +424,7 @@ def division(x: string, y: string, radix: int):
     if geq(x, y):    
 
         while geq(x, y):
-            x = integer_subtraction(x, y + "0"*(len(x) - len(y) - 1), radix)  
-            q = integer_addition(q, "1"+"0"*(len(x) - len(y) - 1), radix)    
+            x, q = integer_subtraction(x, y + "0"*(len(x) - len(y) - 1), radix), integer_addition(q, "1"+"0"*(len(x) - len(y) - 1), radix)   
 
         if negativeX ^ negativeY: #xor function
             q = "-" + q
@@ -417,9 +438,12 @@ def division(x: string, y: string, radix: int):
 #     print(i)
 #     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
 
-for i in range(10,14):
-    print(i)
-    solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
+# import time
+# s=time.time()
+# for i in range(0,1):
+#     print(i)
+#     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
+# print(time.time()-s)
 
-# solve_exercise("Test\Integer\Karatsuba\Exercise\exercise0.json", "Test\Integer\Karatsuba\Calculated\ answer0.json")
+# solve_exercise("Test\Euclidian\Exercise\exercise5.json", "Test\Euclidian\Calculated\ answer5.json")
 
