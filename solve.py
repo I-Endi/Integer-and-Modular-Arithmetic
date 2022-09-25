@@ -400,7 +400,7 @@ def modular_multiplication(x: string, y: string, mod: string, radix: int):
     # If mod is 0 or less then return null
     if geq("0", mod):
         return 
-    # Do reduction on both x and y and then multiply and reduce again
+    # Do reduction on both x and y and then multiply and reduce the result
     x, y = modular_reduction(x, mod, radix), modular_reduction(y, mod, radix)
     result = integer_karatsuba(x, y, radix)
     return modular_reduction(result, mod, radix)
@@ -410,8 +410,11 @@ def modular_multiplication(x: string, y: string, mod: string, radix: int):
 
 def modular_inversion(x: string, mod: string, radix: int):
 
+    # Do reduction on x
     x = modular_reduction(x, mod, radix)
+    # Call extended euclidian algorithm
     a, b, g = integer_euclidian(x,mod,radix)
+    # If gcd is not 1 then there is no inverse and else return coefficient of x reduced by mod.
     if g != "1":
         return
     else:
