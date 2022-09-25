@@ -492,7 +492,7 @@ def signCheck(x: str, y: str):
 
 
 
-# Add
+# Make number of digits equal for both x and y by adding leading zeros
 def addLeadingZero(x: str, y: str):
     
     length_diff = len(x) - len(y)
@@ -504,7 +504,7 @@ def addLeadingZero(x: str, y: str):
 
 
 
-
+# Remove leading zeros.
 def removeLeadingZero(x: str):
     
     while x[0] == "0" and len(x) > 1:
@@ -513,13 +513,13 @@ def removeLeadingZero(x: str):
 
 
 
-
+# Split a string into two equal halves
 def split_string(x: str):
     return x[:len(x)//2], x[len(x)//2:] 
 
 
 
-
+# Return integer version of a number in string version.
 def extended_int(x: str):
     
     if len(x) > 1:
@@ -535,7 +535,7 @@ def extended_int(x: str):
 
 
 
-
+# Convert a integer digit to a string version
 def digit_to_str(x: int):
     
     if x < 10:
@@ -546,50 +546,31 @@ def digit_to_str(x: int):
         return
 
 
-
-    
-# def convert_to_radix(x: string, radix: int):
-    
-#     if not(geq(x, str(radix))):
-#         return x
-
-#     i = 1
-#     q, r = division(x, str(radix**i), 10)
-#     while geq(q, str(radix)):
-#         i += 1
-#         q, r = division(x, str(radix**i), 10)
-#     return q + convert_to_radix(r, radix)
-
+# Divide x by y and return quotient and remainder
 def division(x: str, y: str, radix: int):
 
+    # you cant divide by 0 
     if y == "0":
         return 
 
+    # Make inputs positive and remember their signs.
     x, y, negativeX, negativeY = signCheck(x,y)
     q = "0"
 
     if geq(x, y):    
 
+        # Count how many times we can subtract y from x.
         while geq(x, y):
             x, q = integer_subtraction(x, y + "0"*(len(x) - len(y) - 1), radix), integer_addition(q, "1"+"0"*(len(x) - len(y) - 1), radix)   
 
+        # Fix signs
         if negativeX ^ negativeY: #xor function
             q = "-" + q
+
     if negativeX:
         x = "-" + x
         
     return q, x
 
-
-# for i in range(0,14):
-#     print(i)
-#     solve_exercise("Simple\Exercises\exercise" + str(i) + ".json", "Simple\Calculated\ answer" + str(i) + ".json")
-
-# import time
-# s=time.time()
-# for i in range(0,14):
-#     print(i)
-#     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
-# print(time.time()-s)
 
 
