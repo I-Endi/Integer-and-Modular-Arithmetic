@@ -383,6 +383,9 @@ def modular_addition(x: string, y: string, mod: string, radix: int):
     
 
 def modular_subtraction(x: string, y: string, mod: string, radix: int):
+    """
+    Do a modular subtraction on x and y with 'mod' as a modulus and with radix specified by argument 'radix'. x, y and modulus are inputed as strings. 
+    """
 
     # If mod is 0 or less then return null
     if geq("0", mod):
@@ -396,6 +399,9 @@ def modular_subtraction(x: string, y: string, mod: string, radix: int):
 
      
 def modular_multiplication(x: string, y: string, mod: string, radix: int):
+    """
+    Do a modular multiplication on x and y with 'mod' as a modulus and with radix specified by argument 'radix'. x, y and modulus are inputed as strings. 
+    """
 
     # If mod is 0 or less then return null
     if geq("0", mod):
@@ -409,6 +415,9 @@ def modular_multiplication(x: string, y: string, mod: string, radix: int):
 
 
 def modular_inversion(x: string, mod: string, radix: int):
+    """
+    Find the modular inverse of inputs x as a string with modulus as 'mod' and radix specified by 'radix'
+    """
 
     # Do reduction on x
     x = modular_reduction(x, mod, radix)
