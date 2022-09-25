@@ -16,8 +16,6 @@
 
 # Import built-in json library for handling input/output 
 import json
-from re import M, X
-import string
 
 
 def solve_exercise(exercise_location : str, answer_location : str):
@@ -89,7 +87,7 @@ def solve_exercise(exercise_location : str, answer_location : str):
     
 ### Integer Arithmetic ###
 
-def integer_addition(x: string, y: string, radix: int):
+def integer_addition(x: str, y: str, radix: int):
     """
     Do an integer addition on the two inputs x and y represented as strings and return the result as a string.
     Both x and y have their value in the appropriate radix specified by the input 'radix' which is an integer.
@@ -143,7 +141,7 @@ def integer_addition(x: string, y: string, radix: int):
 
 
 
-def integer_subtraction(x: string, y: string, radix: int):
+def integer_subtraction(x: str, y: str, radix: int):
     """
     Do an integer subtraction on the two inputs x and y represented as strings and return the result as a string.
     The second argument is deducted from the first. Both x and y have their value in the appropriate radix 
@@ -196,7 +194,7 @@ def integer_subtraction(x: string, y: string, radix: int):
 
 
 
-def integer_primary_multiplication(x: string, y: string ,radix: int):
+def integer_primary_multiplication(x: str, y: str ,radix: int):
     """
     Do an integer multiplication on the two inputs x and y represented as strings and return the result as a string.
     Both x and y have their value in the appropriate radix specified by the input 'radix' which is an integer.
@@ -242,7 +240,7 @@ def integer_primary_multiplication(x: string, y: string ,radix: int):
 
 
 
-def integer_karatsuba(x: string, y: string, radix: int):
+def integer_karatsuba(x: str, y: str, radix: int):
     """
     Do an integer multiplication with the karatsuba method on the two inputs x and y represented as strings and return the result as a string.
     Both x and y have their value in the appropriate radix specified by the input 'radix' which is an integer.
@@ -284,7 +282,7 @@ def integer_karatsuba(x: string, y: string, radix: int):
 
     
     
-def integer_euclidian(x: string, y: string, radix: int):
+def integer_euclidian(x: str, y: str, radix: int):
     """
     Do an extended euclidain algorithm on both inputs in radix specified by 'radix' argument.
     Return gcd of x and y, return a and return b where (a*x + b*y = gcd). 
@@ -341,7 +339,7 @@ def integer_euclidian(x: string, y: string, radix: int):
 
 ### Modular Arithmetic ###
 
-def modular_reduction(x: string, mod: string, radix: int):
+def modular_reduction(x: str, mod: str, radix: int):
     """
     Do a modular reduction on x with 'mod' as modulus with radix specified by argument 'radix'. x and modulus are inputed as strings. 
     """
@@ -367,7 +365,7 @@ def modular_reduction(x: string, mod: string, radix: int):
 
 
   
-def modular_addition(x: string, y: string, mod: string, radix: int):
+def modular_addition(x: str, y: str, mod: str, radix: int):
     """
     Do a modular addition on x and y with 'mod' as a modulus and with radix specified by argument 'radix'. x, y and modulus are inputed as strings. 
     """
@@ -382,7 +380,7 @@ def modular_addition(x: string, y: string, mod: string, radix: int):
 
     
 
-def modular_subtraction(x: string, y: string, mod: string, radix: int):
+def modular_subtraction(x: str, y: str, mod: str, radix: int):
     """
     Do a modular subtraction on x and y with 'mod' as a modulus and with radix specified by argument 'radix'. x, y and modulus are inputed as strings. 
     """
@@ -398,7 +396,7 @@ def modular_subtraction(x: string, y: string, mod: string, radix: int):
 
 
      
-def modular_multiplication(x: string, y: string, mod: string, radix: int):
+def modular_multiplication(x: str, y: str, mod: str, radix: int):
     """
     Do a modular multiplication on x and y with 'mod' as a modulus and with radix specified by argument 'radix'. x, y and modulus are inputed as strings. 
     """
@@ -414,7 +412,7 @@ def modular_multiplication(x: string, y: string, mod: string, radix: int):
 
 
 
-def modular_inversion(x: string, mod: string, radix: int):
+def modular_inversion(x: str, mod: str, radix: int):
     """
     Find the modular inverse of inputs x as a string with modulus as 'mod' and radix specified by 'radix'
     """
@@ -432,13 +430,17 @@ def modular_inversion(x: string, mod: string, radix: int):
 
 ### Helping Functions ###
 
-def absolute(x: string):
+# Return the absolute value of string representation of number x as a string
+def absolute(x: str):
     
     if x[0] == "-":
         return x[1:]
     return x
 
-def geq(x: string, y: string):
+
+
+# Return whether x is bigger than y
+def geq(x: str, y: str):
 
     x, y, negativeX, negativeY = signCheck(x, y)
 
@@ -451,7 +453,10 @@ def geq(x: string, y: string):
     else:
         return geq_absolute(x, y)
 
-def geq_absolute(x: string, y: string):
+
+
+# Return whether x is bigger than y if they are both positive
+def geq_absolute(x: str, y: str):
 
     if len(x) > len(y):
         return True
@@ -464,7 +469,11 @@ def geq_absolute(x: string, y: string):
             elif extended_int(x[i]) < extended_int(y[i]): 
                 return False
         return True
-def singleSignCheck(x: string):
+
+
+
+# Make the input positive and return if it was negative or not
+def singleSignCheck(x: str):
     
     negativeX = False
     if x[0] == "-":
@@ -472,13 +481,19 @@ def singleSignCheck(x: string):
         x = absolute(x)
     return x, negativeX
 
-def signCheck(x: string, y: string):
+
+
+# Make both inputs positive and return whether they were negative
+def signCheck(x: str, y: str):
     
     x, negativeX = singleSignCheck(x)
     y, negativeY = singleSignCheck(y)
     return x, y, negativeX, negativeY
 
-def addLeadingZero(x: string, y: string):
+
+
+# Add
+def addLeadingZero(x: str, y: str):
     
     length_diff = len(x) - len(y)
     if length_diff > 0:
@@ -487,16 +502,25 @@ def addLeadingZero(x: string, y: string):
         x = ( "0" * abs(length_diff) ) + x
     return x, y
 
-def removeLeadingZero(x: string):
+
+
+
+def removeLeadingZero(x: str):
     
     while x[0] == "0" and len(x) > 1:
         x = x[1:]
     return x
 
-def split_string(x: string):
+
+
+
+def split_string(x: str):
     return x[:len(x)//2], x[len(x)//2:] 
 
-def extended_int(x: string):
+
+
+
+def extended_int(x: str):
     
     if len(x) > 1:
         return extended_int(split_string(x)[0]) + extended_int(split_string(x)[1])
@@ -509,6 +533,9 @@ def extended_int(x: string):
         else:
             return
 
+
+
+
 def digit_to_str(x: int):
     
     if x < 10:
@@ -517,6 +544,9 @@ def digit_to_str(x: int):
         return chr(x + 55)
     else:
         return
+
+
+
     
 # def convert_to_radix(x: string, radix: int):
     
@@ -530,7 +560,7 @@ def digit_to_str(x: int):
 #         q, r = division(x, str(radix**i), 10)
 #     return q + convert_to_radix(r, radix)
 
-def division(x: string, y: string, radix: int):
+def division(x: str, y: str, radix: int):
 
     if y == "0":
         return 
