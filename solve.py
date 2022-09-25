@@ -35,7 +35,7 @@ def solve_exercise(exercise_location : str, answer_location : str):
 
     ### Parse and solve ###
 
-    # Check type of exercise
+    # Check type of exercise, call the appropriate function to solve and assign the solution to the list named 'answer'
     if exercise["type"] == "integer_arithmetic":
         # Check what operation within the integer arithmetic operations we need to solve
         if exercise["operation"] == "addition":
@@ -90,114 +90,176 @@ def solve_exercise(exercise_location : str, answer_location : str):
 ### Integer Arithmetic ###
 
 def integer_addition(x: string, y: string, radix: int):
-
+    """
+    Do an integer addition on the two inputs x and y represented as strings and return the result as a string.
+    Both x and y have their value in the appropriate radix specified by the input 'radix' which is an integer.
+    """
+    # If an input is zero return the other.
     if y == "0":
         return x
     elif x == "0":
         return y
 
+    # Variable to be appended in the result
     sign = ""
+
+    # Make inputs positive and remember their signs.
     x, y, negativeX, negativeY = signCheck(x, y)
     
+    # Adding two negative numbers returns a negative result.
     if negativeX and negativeY:
         sign = "-"
+    # If only one input is negative subtract it from the positive one.
     elif negativeX:
         return integer_subtraction(y, x, radix)
     elif negativeY:
         return integer_subtraction(x, y, radix)
 
+    # Make the size of both the inputs identical by adding leading zeroes
     x, y = addLeadingZero(x, y)
 
+    # Introduce carry, digit and result
     carry = False
     digit = 0
     result = ""
+    # Loop through all the digits starting from the rightmost digit
     for i in reversed(range(len(x))):
+        # Add the i-th digit from each number and the carry
         digit = extended_int(x[i]) + extended_int(y[i]) + carry
+
+        # If the digit addition is bigger than the radix add a carry and make the digit radix apporpriate
         if digit >= radix:
             carry = True
+            digit = digit % radix
         else:
             carry = False
-        digit = digit % radix
+        # Append the digit to the top of the result as a string.
         result = digit_to_str(digit) + result
 
+    # Return the result. Sign is appeneded, leading zeros are removed and if there is another carry that is added.
     result = sign + removeLeadingZero(str(int(carry)) + result)
     return result
 
-def integer_subtraction(x: string, y: string, radix: int):
 
+
+
+def integer_subtraction(x: string, y: string, radix: int):
+    """
+    Do an integer subtraction on the two inputs x and y represented as strings and return the result as a string.
+    The second argument is deducted from the first. Both x and y have their value in the appropriate radix 
+    specified by the input 'radix' which is an integer.
+    """
+
+    # Make inputs positive and remember their signs.
     x, y, negativeX, negativeY = signCheck(x, y)
     
+    # If both numbers are negative it is the same as deducting the first number form the second.
     if negativeX and negativeY:
         return integer_subtraction(y, x, radix)
+    
+    # Deducting a positive number from a negative is the same as adding two negative numbers.
     elif negativeX:
         return integer_addition("-" + x, "-" +  y, radix)
+
+    # Deducting a negative number from a positive is the same as adding both numbers.
     elif negativeY:
         return integer_addition(x, y, radix)
 
+    # Make the size of both the inputs identical by adding leading zeroes
     x, y = addLeadingZero(x, y)
 
+    # Deduct the small number from the big number.
     if not(geq(x, y)):
         return "-" + integer_subtraction(y, x, radix)
 
+    # Introduce carry, digit and result
     carry = False
     digit = 0
     result = ""
+    # Loop through all the digits starting from the rightmost digit
     for i in reversed(range(len(x))):
+        # Subtract the i-th digits and the carry if it is used.
         digit = extended_int(x[i]) - extended_int(y[i]) - carry
+        # If the subtraction is negative, add a radix and make the carry positive.
         if digit < 0:
             carry = True
             digit = digit + radix
         else:
             carry = False
+        # Append the digit to the top of the result as a string.
         result = digit_to_str(digit) + result
-
+    
+    # Remove leading zeros and return
     result = removeLeadingZero(result)
     return result
 
-def integer_primary_multiplication(x: string, y: string ,radix: int):
 
+
+
+def integer_primary_multiplication(x: string, y: string ,radix: int):
+    """
+    Do an integer multiplication on the two inputs x and y represented as strings and return the result as a string.
+    Both x and y have their value in the appropriate radix specified by the input 'radix' which is an integer.
+    """
+
+    # If an input is zero return zero.
     if y == "0" or x == "0":
         return "0"
-   
+    
+    # Make inputs positive and remember their signs.
     x, y , negativeX, negativeY = signCheck(x, y)
     result = "0"
 
+    # Make the smallest number as the second number to ease computation.
     if geq(y, x):
         x, y = y, x
     
+    # Loop through the digits of the second number starting from the rightmost digit
     for i in reversed(range(len(y))):
+        # Introduce temoporary sum and carry
         temp = ""
         carry = 0
         # print(i)
+        # Loop through the digits of the first number starting from the rightmost digit
         for j in reversed(range(len(x))):
+            # Multiply the i-th digit of the second number and the j-th digit of the first number and add carry
             prod = (extended_int(y[i]) * extended_int(x[j])) + carry
+            #  Append the digit to the temporary sum
             temp = digit_to_str(prod % radix) + temp 
+            # Calculate multiplication carry
             carry = prod // radix
+        # Add the last carry, and the zeros as in primary school multiplication
         temp = digit_to_str(carry) + temp + "0"*(len(y) - i - 1)
+        # Add the temporary sum to the final result
         result = integer_addition(result, temp, radix)
     
+    # Remove leading zeros, fix the sign and return
     result = removeLeadingZero(result)
     if negativeX ^ negativeY:
         result = "-" + result
     return result
 
-def integer_karatsuba(x: string, y: string, radix: int):
 
+
+
+def integer_karatsuba(x: string, y: string, radix: int):
+    """
+    Do an integer multiplication with the karatsuba method on the two inputs x and y represented as strings and return the result as a string.
+    Both x and y have their value in the appropriate radix specified by the input 'radix' which is an integer.
+    """
+
+    # Make inputs positive and remember their signs.
     x, y, negativeX, negativeY = signCheck(x, y)
 
-    if negativeX and negativeY:
-        # -x * -y = x * y
-        return integer_karatsuba(x,y , radix)
-    elif negativeX:
-        # -x * y = - (x * y) 
-        return '-' + integer_karatsuba(x, y, radix)
-    elif negativeY:
-        # x * -y = - (x * y)
-        return '-' + integer_karatsuba(x, y, radix)
+    # If only one input is negative fix the sign
+    if negativeX ^ negativeY:
+        return '-' + integer_karatsuba(x,y , radix)
 
+    # If one of the inputs has 1 digit then do a primary school multiplication
     if len(x) < 2 or len(y) < 2:
         return integer_primary_multiplication(x, y, radix)
     
+    # Make the size of both the inputs identical by adding leading zeroes
     x, y = addLeadingZero(x, y)
 
     if not (len(x) % 2 == 0):
@@ -205,19 +267,28 @@ def integer_karatsuba(x: string, y: string, radix: int):
         x = "0" + x
         y = "0" + y
 
+    # Split the input into two
     x1, x2 = split_string(x)
     y1, y2 = split_string(y)
 
+    # Multiply the first two halves together and the second two halves together
     ac = integer_karatsuba(x1, y1, radix)
     bd = integer_karatsuba(x2, y2, radix)
+
     # ad + bc = [(a + b) * (c + d)] - ac - bd
     ad_Plus_bc = integer_subtraction(integer_subtraction(integer_karatsuba(integer_addition(x1, x2, radix), integer_addition(y1, y2, radix), radix), ac, radix), bd, radix)
 
+    # return ac*(radix^n) + ad_Plus_bc*(radix^(n/2)) + bd
     return integer_addition(integer_addition(ac + ("0" * (2 * (len(x)//2))), ad_Plus_bc + ("0" * (len(x)//2)), radix), bd, radix)
+
+
     
     
 def integer_euclidian(x: string, y: string, radix: int):
-
+    """
+    Do an extended euclidain algorithm on both inputs in radix specified by 'radix' argument. Return gcd of x and y, return a and return b where (a*x + b*y = gcd). 
+    """
+    
     x, y, negativeX, negativeY = signCheck(x,y)
     switch = False
     if x =="0":
@@ -401,17 +472,17 @@ def digit_to_str(x: int):
     else:
         return
     
-def convert_to_radix(x: string, radix: int):
+# def convert_to_radix(x: string, radix: int):
     
-    if not(geq(x, str(radix))):
-        return x
+#     if not(geq(x, str(radix))):
+#         return x
 
-    i = 1
-    q, r = division(x, str(radix**i), 10)
-    while geq(q, str(radix)):
-        i += 1
-        q, r = division(x, str(radix**i), 10)
-    return q + convert_to_radix(r, radix)
+#     i = 1
+#     q, r = division(x, str(radix**i), 10)
+#     while geq(q, str(radix)):
+#         i += 1
+#         q, r = division(x, str(radix**i), 10)
+#     return q + convert_to_radix(r, radix)
 
 def division(x: string, y: string, radix: int):
 
@@ -440,10 +511,9 @@ def division(x: string, y: string, radix: int):
 
 # import time
 # s=time.time()
-# for i in range(0,1):
+# for i in range(0,14):
 #     print(i)
 #     solve_exercise("Realistic\Exercises\exercise" + str(i) + ".json", "Realistic\Calculated\ answer" + str(i) + ".json")
 # print(time.time()-s)
 
-# solve_exercise("Test\Euclidian\Exercise\exercise5.json", "Test\Euclidian\Calculated\ answer5.json")
 
