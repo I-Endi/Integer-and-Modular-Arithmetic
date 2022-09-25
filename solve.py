@@ -286,28 +286,35 @@ def integer_karatsuba(x: string, y: string, radix: int):
     
 def integer_euclidian(x: string, y: string, radix: int):
     """
-    Do an extended euclidain algorithm on both inputs in radix specified by 'radix' argument. Return gcd of x and y, return a and return b where (a*x + b*y = gcd). 
+    Do an extended euclidain algorithm on both inputs in radix specified by 'radix' argument.
+    Return gcd of x and y, return a and return b where (a*x + b*y = gcd). 
     """
-    
+
+    # Make inputs positive and remember their signs.
     x, y, negativeX, negativeY = signCheck(x,y)
+
     switch = False
+    # If any of the inputs is zero return its coefficient as zero and the other coefficient as 1. The gcd is equal to the non-zero input
     if x =="0":
-        return x, "1", y
+        return x, "1", y 
     elif y == "0":
         return "1", y, x
+    # Rename x and y as a and b if x is bigger or b and a if y is bigger
     elif geq(x, y):
         a, b = x, y
     else:
         a, b = y, x
         switch = True
 
+    # s is coefficient for x and t is coefficient for y.
     s_old = "1"
     s_new = "0"
     t_old = "0"
     t_new = "1" 
 
-    #r = 1 #doesn't really matter as long as it is not 0
+    # Loop until b hits zero
     while geq(b, "1"):
+        # Execute extended euclidian algorithm as referenced in the lecture notes
         q, r = division(a, b, radix)
         s3 = integer_subtraction(s_old,integer_karatsuba(q,s_new,radix),radix)
         s_old = s_new
@@ -318,13 +325,14 @@ def integer_euclidian(x: string, y: string, radix: int):
         a = b
         b = r 
     
+    # If we already swiched the value we switch the coefficients
     if switch:
         s_old, t_old = t_old, s_old
 
+    # Fix the result depending on x and y sign
     if negativeX:
         s_old= s_old[1:]
 
-    # remove '-' sign
     if negativeY:
         t_old = t_old[1:]
     
@@ -334,45 +342,71 @@ def integer_euclidian(x: string, y: string, radix: int):
 ### Modular Arithmetic ###
 
 def modular_reduction(x: string, mod: string, radix: int):
+    """
+    Do a modular reduction on x with 'mod' as modulus with radix specified by argument 'radix'. x and modulus are inputed as strings. 
+    """
 
+    # If mod is 0 or less then return null
     if geq("0", mod):
         return 
 
+    # Make x positive and remember the sign
     x, negativeX = singleSignCheck(x)
 
+    # Deduct modulus from x until x is less than mod. If x has 2 more digits than mod or more than add zeros behind mod so we make less subtractions.
     while geq(x, mod):
         suffix = "0"*(len(x) - len(mod) - 1)
         x = integer_subtraction(x, mod + suffix, radix)    
 
+    # If x was negative in the beginning subract current x from mod.
     if negativeX:
         x =  integer_subtraction(mod, x, radix)
     
     return x
+
+
+
   
 def modular_addition(x: string, y: string, mod: string, radix: int):
-    
+    """
+    Do a modular addition on x and y with 'mod' as a modulus and with radix specified by argument 'radix'. x, y and modulus are inputed as strings. 
+    """
+    # If mod is 0 or less then return null
     if geq("0", mod):
         return 
+    # Do reduction on both x and y and then add and reduce the result
     x, y = modular_reduction(x, mod, radix), modular_reduction(y, mod, radix)
     result = integer_addition(x, y, radix)
     return modular_reduction(result, mod, radix)
+
+
     
 
 def modular_subtraction(x: string, y: string, mod: string, radix: int):
 
+    # If mod is 0 or less then return null
     if geq("0", mod):
         return 
+    # Do reduction on both x and y and then subtract and reduce the result
     x, y = modular_reduction(x, mod, radix), modular_reduction(y, mod, radix)
     result = integer_subtraction(x, y, radix)
     return modular_reduction(result, mod, radix)
+
+
+
      
 def modular_multiplication(x: string, y: string, mod: string, radix: int):
 
+    # If mod is 0 or less then return null
     if geq("0", mod):
         return 
+    # Do reduction on both x and y and then multiply and reduce again
     x, y = modular_reduction(x, mod, radix), modular_reduction(y, mod, radix)
     result = integer_karatsuba(x, y, radix)
     return modular_reduction(result, mod, radix)
+
+
+
 
 def modular_inversion(x: string, mod: string, radix: int):
 
